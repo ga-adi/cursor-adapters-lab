@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by ShowMe on 2/2/16.
@@ -53,6 +54,17 @@ public class GrocerySQLiteOpenHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(GROCERY_LIST_TABLE_NAME, GROCERY_COLUMNS, null, null, null, null, null, null);
         return cursor;
+    }
+
+    public void removeItem(String  name){
+        // Define 'where' part of query.
+        String selection = "ITEM_NAME=  ?";
+// Specify arguments in placeholder order.
+        String[] selectionArgs = { name };
+//        Log.d("BLAH", "Blah"+name);
+// Issue SQL statement.
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("SHOPPING_LIST", selection, selectionArgs);
     }
 
 }

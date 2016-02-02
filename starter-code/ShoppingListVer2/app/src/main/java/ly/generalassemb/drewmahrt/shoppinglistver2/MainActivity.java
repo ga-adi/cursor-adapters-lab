@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -19,6 +20,9 @@ import org.w3c.dom.Text;
 import ly.generalassemb.drewmahrt.shoppinglistver2.setup.DBAssetHelper;
 
 public class MainActivity extends AppCompatActivity {
+
+    GrocerySQLiteOpenHelper mHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
         DBAssetHelper dbSetup = new DBAssetHelper(MainActivity.this);
         dbSetup.getReadableDatabase();
 
-        GrocerySQLiteOpenHelper helper = new GrocerySQLiteOpenHelper(MainActivity.this);
-        Cursor cursor = helper.getGroceryList();
+         mHelper = new GrocerySQLiteOpenHelper(MainActivity.this);
+        final Cursor cursor = mHelper.getGroceryList();
 
-        CursorAdapter cursorAdapter = new CursorAdapter(MainActivity.this, cursor, 0) {
+        final CursorAdapter cursorAdapter = new CursorAdapter(MainActivity.this, cursor, 0) {
             @Override
             public View newView(Context context, Cursor cursor, ViewGroup parent) {
                 return LayoutInflater.from(context).inflate(R.layout.grocery_list, parent, false);
@@ -56,17 +60,24 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        ListView listView = (ListView) findViewById(R.id.listViewShoppingList);
+        final ListView listView = (ListView) findViewById(R.id.listViewShoppingList);
         listView.setAdapter(cursorAdapter);
 
         AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "Pushed position " + position, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Pushed position " + position, Toast.LENGTH_SHORT).show();
+                String itemNameRemove = ((TextView) view.findViewById(R.id.textViewItemName)).getText().toString();
+//                Toast.makeText(MainActivity.this, "Toast name?  " +blah, Toast.LENGTH_SHORT).show();
 
+                mHelper.removeItem(itemNameRemove);
+                Cursor cursorInside = mHelper.getGroceryList();
+                cursorAdapter.swapCursor(cursorInside);
+//                cursorAdapter.notifyDataSetChanged();
                 return true;
             }
         };
         listView.setOnItemLongClickListener(longClickListener);
+
     }
 }
