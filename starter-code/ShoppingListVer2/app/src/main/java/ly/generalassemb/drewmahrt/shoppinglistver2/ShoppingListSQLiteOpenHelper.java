@@ -70,6 +70,7 @@ public class ShoppingListSQLiteOpenHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null );
+
         return cursor;
     }
 
