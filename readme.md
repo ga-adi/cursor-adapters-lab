@@ -32,6 +32,7 @@ The table is named **SHOPPING_LIST**
 - Use a CursorAdapter to display the queried grocery items
 
 **Bonus:**
+- Delete an item from the database when you long-click on the list item ([Look here for help](http://developer.android.com/training/basics/data-storage/databases.html))
 - Create a custom layout for the ListView item to show more info from the database
 
 #### Starter code
@@ -50,6 +51,7 @@ The screenshot below shows what the app should look like.
 
 ## Additional Resources
 
+- [SQLiteOpenHelper](http://developer.android.com/training/basics/data-storage/databases.html)
 - [Cursor](http://developer.android.com/reference/android/database/Cursor.html)
 - [CursorAdapter](http://developer.android.com/reference/android/widget/CursorAdapter.html)
 - [SimpleCursorAdapter](http://developer.android.com/reference/android/widget/SimpleCursorAdapter.html)
