@@ -59,9 +59,24 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void deleteRow(int id){
+    public void deleteRow(int position){
         SQLiteDatabase db = this.getWritableDatabase();
-        String[] itemIds = new String[]{ String.valueOf(id) };
-        db.delete(TABLE_NAME, null, itemIds);
+        Cursor cursor = db.query(TABLE_NAME,
+                COLUMN_NAMES,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        cursor.moveToPosition(position);
+        int idToDelete = cursor.getInt(cursor.getColumnIndex(ITEM_ID));
+
+        String selection = ITEM_ID + " = ?";
+        String[] itemIds = new String[]{ String.valueOf(idToDelete) };
+
+        db.delete(TABLE_NAME, selection, itemIds);
+
     }
 }
