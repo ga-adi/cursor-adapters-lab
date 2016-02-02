@@ -4,11 +4,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import ly.generalassemb.drewmahrt.shoppinglistver2.setup.DBAssetHelper;
 
@@ -22,5 +28,45 @@ public class MainActivity extends AppCompatActivity {
         DBAssetHelper dbSetup = new DBAssetHelper(MainActivity.this);
         dbSetup.getReadableDatabase();
 
+        GrocerySQLiteOpenHelper helper = new GrocerySQLiteOpenHelper(MainActivity.this);
+        Cursor cursor = helper.getGroceryList();
+
+        CursorAdapter cursorAdapter = new CursorAdapter(MainActivity.this, cursor, 0) {
+            @Override
+            public View newView(Context context, Cursor cursor, ViewGroup parent) {
+                return LayoutInflater.from(context).inflate(R.layout.grocery_list, parent, false);
+            }
+
+            @Override
+            public void bindView(View view, Context context, Cursor cursor) {
+                TextView nameTextView = (TextView) view.findViewById(R.id.textViewItemName);
+                TextView descriptionTextView = (TextView) view.findViewById(R.id.textViewDescription);
+                TextView priceTextView = (TextView) view.findViewById(R.id.textViewPrice);
+                TextView typeTextView = (TextView) view.findViewById(R.id.textViewType);
+
+                String itemName = cursor.getString(cursor.getColumnIndex(GrocerySQLiteOpenHelper.COL_ITEM_NAME));
+                String itemDescription = cursor.getString(cursor.getColumnIndex(GrocerySQLiteOpenHelper.COL_ITEM_DESCRIPTION));
+                String itemPrice = cursor.getString(cursor.getColumnIndex(GrocerySQLiteOpenHelper.COL_PRICE));
+                String itemType = cursor.getString(cursor.getColumnIndex(GrocerySQLiteOpenHelper.COL_TYPE));
+
+                nameTextView.setText(itemName);
+                descriptionTextView.setText(" Description: " + itemDescription);
+                priceTextView.setText(" Price: $" + itemPrice);
+                typeTextView.setText(" Item Type: " + itemType + "\n");
+            }
+        };
+
+        ListView listView = (ListView) findViewById(R.id.listViewShoppingList);
+        listView.setAdapter(cursorAdapter);
+
+        AdapterView.OnItemLongClickListener longClickListener = new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(MainActivity.this, "Pushed position " + position, Toast.LENGTH_SHORT).show();
+
+                return true;
+            }
+        };
+        listView.setOnItemLongClickListener(longClickListener);
     }
 }
