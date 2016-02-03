@@ -28,23 +28,13 @@ public class GroceryItem {
 
   public ItemType getItemType() { return mType; }
 
-  public enum ItemType { FOOD;
-
-    @Override
-    public String toString() {
-      switch (this) {
-        case FOOD:
-          return "Food";
-      }
-      return "";
-    }
-  }
+  public enum ItemType { Food, Dairy, Dishes, Poultry, Produce }
 
   public static class Builder {
     public static String NAME = "Item Name";
     public static String DESCRIPTION = "";
     public static double PRICE = 0.0;
-    public static ItemType ITEM_TYPE = ItemType.FOOD;
+    public static ItemType ITEM_TYPE = ItemType.Food;
 
     private String mName;
     private String mDescription;

@@ -17,12 +17,12 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
   private static final String TAG = GrocerySQLHelper.class.getCanonicalName();
   private static GrocerySQLHelper INSTANCE;
 
-  /* package */ static final String TABLE_NAME = "SHOPPING_LIST";
-  /* package */ static final String COL_ID = "_id";
-  /* package */ static final String COL_ITEM_NAME = "ITEM_NAME";
-  /* package */ static final String COL_DESCRIPTION = "DESCRIPTION";
-  /* package */ static final String COL_PRICE = "PRICE";
-  /* package */ static final String COL_TYPE = "TYPE";
+  public static final String TABLE_NAME = "SHOPPING_LIST";
+  public static final String COL_ID = "_id";
+  public static final String COL_ITEM_NAME = "ITEM_NAME";
+  public static final String COL_DESCRIPTION = "DESCRIPTION";
+  public static final String COL_PRICE = "PRICE";
+  public static final String COL_TYPE = "TYPE";
 
   private static final String CREATE_TABLE =
       "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" + COL_ID +
@@ -59,7 +59,7 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
     values.put(COL_ITEM_NAME, item.getName());
     values.put(COL_DESCRIPTION, item.getDescription());
     values.put(COL_PRICE, item.getPrice());
-    values.put(COL_TYPE, item.getItemType().toString());
+    values.put(COL_TYPE, item.getItemType().name());
     return db.insert(TABLE_NAME, null, values);
   }
 
