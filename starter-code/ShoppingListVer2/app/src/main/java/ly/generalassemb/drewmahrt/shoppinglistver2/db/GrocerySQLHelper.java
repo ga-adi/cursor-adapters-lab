@@ -53,6 +53,36 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
     onCreate(db);
   }
 
+  public GroceryItem createFromId(String id) {
+    SQLiteDatabase db = getReadableDatabase();
+    String whereClause = COL_ID + " = ?";
+    String[] whereArgs = {id};
+    final Cursor cursor = db.query(TABLE_NAME, null, whereClause, whereArgs,
+                                   null, null, null, "1");
+
+    cursor.moveToFirst();
+
+    int idIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_ID);
+    int nameIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_ITEM_NAME);
+    int descriptionIndex =
+        cursor.getColumnIndex(GrocerySQLHelper.COL_DESCRIPTION);
+    int priceIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_PRICE);
+    int typeIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_TYPE);
+
+    //    final String itemId = cursor.getString(idIndex);
+    final String itemName = cursor.getString(nameIndex);
+    final String description = cursor.getString(descriptionIndex);
+    final Double price = cursor.getDouble(priceIndex);
+    final String type = cursor.getString(typeIndex);
+
+    return new GroceryItem.Builder()
+        .name(itemName)
+        .description(description)
+        .itemType(GroceryItem.ItemType.valueOf(type))
+        .price(price)
+        .build();
+  }
+
   public long create(GroceryItem item) {
     SQLiteDatabase db = getWritableDatabase();
     ContentValues values = new ContentValues();

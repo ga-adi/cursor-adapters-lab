@@ -1,16 +1,16 @@
 package ly.generalassemb.drewmahrt.shoppinglistver2.activities;
 
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import ly.generalassemb.drewmahrt.shoppinglistver2.R;
 import ly.generalassemb.drewmahrt.shoppinglistver2.db.DBAssetHelper;
@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
   private GroceryCursorAdapter mAdapter;
   private Cursor mCursor;
   private Button mAddButton; // TODO: make fabulous
+  private CoordinatorLayout mLayout;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     mCursor = mHelper.getGroceries();
     mAdapter = new GroceryCursorAdapter(MainActivity.this, mCursor);
 
+    mLayout = (CoordinatorLayout)findViewById(R.id.snack_bar);
+
     mAddButton = (Button)findViewById(R.id.add_btn);
     mAddButton.setOnClickListener(new View.OnClickListener() {
 
@@ -49,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getFragmentManager();
         CreateDialogFragment fragment = CreateDialogFragment.newInstance();
         fragment.show(fragmentManager, "create_item_dialog");
-        //        final GroceryItem item = new GroceryItem.Builder().build();
-        //        mHelper.create(item);
-        //        mAdapter.swapCursor(mHelper.getGroceries());
       }
     });
 
@@ -64,43 +64,27 @@ public class MainActivity extends AppCompatActivity {
             final TextView textView = (TextView)findViewById(R.id.item_id_txt);
             final String itemId = textView.getText().toString();
 
-            Toast.makeText(MainActivity.this, "_id is " + itemId,
-                           Toast.LENGTH_SHORT)
-                .show();
-            // TODO: show prompt before deletion
+            final GroceryItem cacheItem = mHelper.createFromId(itemId);
             mHelper.deleteById(itemId);
             mAdapter.swapCursor(mHelper.getGroceries());
+            Snackbar.make(mLayout, "Item was deleted",
+                          Snackbar.LENGTH_INDEFINITE)
+                .setAction("UNDO",
+                           new View.OnClickListener() {
+                             @Override
+                             public void onClick(View v) {
+                               mHelper.create(cacheItem);
+                               mAdapter.swapCursor(mHelper.getGroceries());
+                               Snackbar.make(mLayout, "Item was restored",
+                                             Snackbar.LENGTH_SHORT)
+                                   .show();
+                             }
+                           })
+                .show();
             return true;
           }
         });
     mListView.setAdapter(mAdapter);
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode,
-                                  Intent data) {
-    if (requestCode == 0 && resultCode == RESULT_OK) {
-      Bundle bundle = data.getExtras();
-      String itemName = bundle.getString(GrocerySQLHelper.COL_ITEM_NAME,
-                                         GroceryItem.Builder.NAME);
-      String description = bundle.getString(GrocerySQLHelper.COL_DESCRIPTION,
-                                            GroceryItem.Builder.DESCRIPTION);
-      double price = bundle.getDouble(GrocerySQLHelper.COL_PRICE,
-                                      GroceryItem.Builder.PRICE);
-      String itemTypeName = bundle.getString(
-          GrocerySQLHelper.COL_TYPE, GroceryItem.Builder.ITEM_TYPE.name());
-      final GroceryItem item =
-          new GroceryItem.Builder()
-              .name(itemName)
-              .description(description)
-              .price(price)
-              .itemType(GroceryItem.ItemType.valueOf(itemTypeName))
-              .build();
-
-      mHelper = GrocerySQLHelper.getInstance(MainActivity.this);
-      mHelper.create(item);
-      mAdapter.swapCursor(mHelper.getGroceries());
-    }
   }
 
   @Override

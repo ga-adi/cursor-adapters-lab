@@ -42,6 +42,7 @@ public class CreateDialogFragment extends DialogFragment {
     return new AlertDialog.Builder(getActivity())
         .setView(view)
         .setTitle("Create Item")
+        .setCancelable(false)
         .setPositiveButton(
             "ADD",
             new DialogInterface.OnClickListener() {
