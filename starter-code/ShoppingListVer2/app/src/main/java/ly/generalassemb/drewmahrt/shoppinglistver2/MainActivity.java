@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView textView = (TextView)view.findViewById(R.id.shopping_list_name_textView);
                 String itemName = textView.getText().toString();
                 Toast.makeText(MainActivity.this,"DELETING THE ITEM "+itemName,Toast.LENGTH_SHORT).show();
-              
+
                 mDatabaseHelper.deleteItem(itemName);
                 Cursor newCursor = mDatabaseHelper.getEntireList();
                 cursorAdapter.swapCursor(newCursor);

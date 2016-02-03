@@ -22,5 +22,6 @@
         android:id="@+id/shopping_list_price_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="10sp"/>
+        android:textSize="10sp"
+        android:layout_gravity="left"/>
 </LinearLayout>
