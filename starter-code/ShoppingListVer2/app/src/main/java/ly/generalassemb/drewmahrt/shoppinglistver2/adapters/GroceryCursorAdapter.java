@@ -1,4 +1,4 @@
-package ly.generalassemb.drewmahrt.shoppinglistver2.db;
+package ly.generalassemb.drewmahrt.shoppinglistver2.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +10,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import ly.generalassemb.drewmahrt.shoppinglistver2.R;
+import ly.generalassemb.drewmahrt.shoppinglistver2.db.GrocerySQLHelper;
 
 /**
  * Copyright 2016 Boloutare Doubeni

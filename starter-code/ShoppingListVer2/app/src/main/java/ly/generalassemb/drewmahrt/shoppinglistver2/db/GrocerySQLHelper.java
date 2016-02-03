@@ -75,6 +75,8 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
     final Double price = cursor.getDouble(priceIndex);
     final String type = cursor.getString(typeIndex);
 
+    cursor.close();
+
     return new GroceryItem.Builder()
         .name(itemName)
         .description(description)
@@ -98,6 +100,27 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
 
     Log.d(TAG, "Querying the groceries");
     return db.query(TABLE_NAME, null, null, null, null, null, null);
+  }
+
+  public int updateItem(GroceryItem.Updater updater) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues values = new ContentValues();
+    if (updater.getName() != null) {
+      values.put(COL_ITEM_NAME, updater.getName());
+    }
+    if (updater.getDescription() != null) {
+      values.put(COL_DESCRIPTION, updater.getDescription());
+    }
+    if (updater.getPrice() != null) {
+      values.put(COL_PRICE, updater.getPrice());
+    }
+    if (updater.getItemType() != null) {
+      values.put(COL_TYPE, updater.getItemType().name());
+    }
+
+    String selection = COL_ID + " = ?";
+    String[] selectionArgs = {String.valueOf(updater.getId())};
+    return db.update(TABLE_NAME, values, selection, selectionArgs);
   }
 
   public void deleteById(String id) {

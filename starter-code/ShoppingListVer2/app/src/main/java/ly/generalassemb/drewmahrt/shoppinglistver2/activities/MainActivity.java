@@ -3,6 +3,7 @@ package ly.generalassemb.drewmahrt.shoppinglistver2.activities;
 import android.app.FragmentManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,9 +17,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import ly.generalassemb.drewmahrt.shoppinglistver2.R;
+import ly.generalassemb.drewmahrt.shoppinglistver2.adapters.GroceryCursorAdapter;
 import ly.generalassemb.drewmahrt.shoppinglistver2.db.DBAssetHelper;
-import ly.generalassemb.drewmahrt.shoppinglistver2.db.GroceryCursorAdapter;
 import ly.generalassemb.drewmahrt.shoppinglistver2.db.GrocerySQLHelper;
+import ly.generalassemb.drewmahrt.shoppinglistver2.fragments.GroceryDialogFragment;
 import ly.generalassemb.drewmahrt.shoppinglistver2.models.GroceryItem;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
   private Cursor mCursor;
   private Button mAddButton; // TODO: make fabulous
   private CoordinatorLayout mLayout;
+  private FragmentManager mManager;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
 
       @Override
       public void onClick(View v) {
-        FragmentManager fragmentManager = getFragmentManager();
-        CreateDialogFragment fragment = CreateDialogFragment.newInstance();
-        fragment.show(fragmentManager, "create_item_dialog");
+        mManager = getFragmentManager();
+        GroceryDialogFragment fragment = GroceryDialogFragment.newInstance();
+        fragment.show(mManager, GroceryDialogFragment.TAG);
       }
     });
 
@@ -80,24 +83,19 @@ public class MainActivity extends AppCompatActivity {
     if (bundle == null) {
       return;
     }
-    String itemName = bundle.getString(GrocerySQLHelper.COL_ITEM_NAME,
-                                       GroceryItem.Builder.NAME);
-    String description = bundle.getString(GrocerySQLHelper.COL_DESCRIPTION,
-                                          GroceryItem.Builder.DESCRIPTION);
-    double price =
-        bundle.getDouble(GrocerySQLHelper.COL_PRICE, GroceryItem.Builder.PRICE);
-    String itemTypeName = bundle.getString(
-        GrocerySQLHelper.COL_TYPE, GroceryItem.Builder.ITEM_TYPE.name());
-    final GroceryItem item =
-        new GroceryItem.Builder()
-            .name(itemName)
-            .description(description)
-            .price(price)
-            .itemType(GroceryItem.ItemType.valueOf(itemTypeName))
-            .build();
 
     mHelper = GrocerySQLHelper.getInstance(MainActivity.this);
-    mHelper.create(item);
+
+    if (bundle.getSerializable(GrocerySQLHelper.TABLE_NAME) != null) {
+      final GroceryItem item =
+          (GroceryItem)bundle.getSerializable(GrocerySQLHelper.TABLE_NAME);
+      mHelper.create(item);
+    } else if (bundle.getSerializable(GroceryDialogFragment.UPDATE) != null) {
+      final GroceryItem.Updater updater =
+          (GroceryItem.Updater)bundle.getSerializable(
+              GroceryDialogFragment.UPDATE);
+      mHelper.updateItem(updater);
+    }
     mAdapter.swapCursor(mHelper.getGroceries());
   }
 
@@ -107,11 +105,14 @@ public class MainActivity extends AppCompatActivity {
         new PopupMenu.OnMenuItemClickListener() {
           @Override
           public boolean onMenuItemClick(MenuItem item) {
+            final TextView textView = (TextView)findViewById(R.id.item_id_txt);
+            final String itemId = textView.getText().toString();
             switch (item.getItemId()) {
             case R.id.popup_delete:
-              deleteAction();
+              onDeleteMenuItemPressed(itemId);
               break;
             case R.id.popup_update:
+              onUpdateMenuItemPressed(itemId);
               break;
             default:
               break;
@@ -125,9 +126,7 @@ public class MainActivity extends AppCompatActivity {
     popupMenu.show();
   }
 
-  private void deleteAction() {
-    final TextView textView = (TextView)findViewById(R.id.item_id_txt);
-    final String itemId = textView.getText().toString();
+  private void onDeleteMenuItemPressed(@NonNull String itemId) {
 
     final GroceryItem cacheItem = mHelper.createFromId(itemId);
     mHelper.deleteById(itemId);
@@ -145,5 +144,19 @@ public class MainActivity extends AppCompatActivity {
                      }
                    })
         .show();
+  }
+
+  private void onUpdateMenuItemPressed(@NonNull String itemID) {
+    GroceryItem.Updater updater =
+        new GroceryItem.Updater(Integer.parseInt(itemID));
+    GroceryItem item = mHelper.createFromId(itemID);
+
+    Bundle bundle = new Bundle();
+    bundle.putSerializable(GroceryDialogFragment.UPDATE, updater);
+    bundle.putSerializable(GroceryDialogFragment.CREATE, item);
+    mManager = getFragmentManager();
+    GroceryDialogFragment fragment = GroceryDialogFragment.newInstance();
+    fragment.setArguments(bundle);
+    fragment.show(mManager, GroceryDialogFragment.TAG);
   }
 }
