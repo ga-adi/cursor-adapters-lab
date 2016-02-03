@@ -5,33 +5,28 @@
               android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/item_id_txt"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
         android:id="@+id/item_name_txt"
-        android:text="ITEM NAME"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/item_description_txt"
-        android:text="DESCRIPTION"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/item_price_txt"
-        android:text="$0.99"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:id="@+id/item_type"
-        android:text="FOOD_TYPE"
+        android:id="@+id/item_type_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/item_id"
-        android:text="DAT ID"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
 </LinearLayout>

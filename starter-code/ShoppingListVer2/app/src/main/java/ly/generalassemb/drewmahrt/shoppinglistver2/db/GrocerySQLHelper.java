@@ -1,10 +1,13 @@
 package ly.generalassemb.drewmahrt.shoppinglistver2.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import ly.generalassemb.drewmahrt.shoppinglistver2.models.GroceryItem;
 
 /**
  * Copyright 2016 Boloutare Doubeni
@@ -27,7 +30,8 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
       COL_DESCRIPTION + ", " + COL_PRICE + " TEXT, " + COL_TYPE + " TEXT )";
 
   private GrocerySQLHelper(Context context) {
-    super(context, DBAssetHelper.DATABASE_NAME, null, DBAssetHelper.DATABASE_VERSION);
+    super(context, DBAssetHelper.DATABASE_NAME, null,
+          DBAssetHelper.DATABASE_VERSION);
   }
 
   public static GrocerySQLHelper getInstance(Context context) {
@@ -49,17 +53,27 @@ public class GrocerySQLHelper extends SQLiteOpenHelper {
     onCreate(db);
   }
 
+  public long create(GroceryItem item) {
+    SQLiteDatabase db = getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put(COL_ITEM_NAME, item.getName());
+    values.put(COL_DESCRIPTION, item.getDescription());
+    values.put(COL_PRICE, item.getPrice());
+    values.put(COL_TYPE, item.getItemType().toString());
+    return db.insert(TABLE_NAME, null, values);
+  }
+
   public Cursor getGroceries() {
     SQLiteDatabase db = getReadableDatabase();
 
     Log.d(TAG, "Querying the groceries");
-    return db.query(TABLE_NAME,  null, null, null, null, null, null);
+    return db.query(TABLE_NAME, null, null, null, null, null, null);
   }
 
   public void deleteById(String id) {
     SQLiteDatabase db = getWritableDatabase();
-    String whereClause  = COL_ID + " = ?";
-    String[] whereArgs = { id };
+    String whereClause = COL_ID + " = ?";
+    String[] whereArgs = {id};
     db.delete(TABLE_NAME, whereClause, whereArgs);
   }
 }

@@ -24,7 +24,7 @@ public class GroceryCursorAdapter extends CursorAdapter {
   public View newView(Context context, Cursor cursor, ViewGroup parent) {
     Log.d(TAG, "Inflating view");
     return LayoutInflater.from(context)
-        .inflate(R.layout.grocery_item, parent, false);
+        .inflate(R.layout.shopping_list_view, parent, false);
   }
 
   @Override
@@ -35,14 +35,13 @@ public class GroceryCursorAdapter extends CursorAdapter {
     final TextView descriptionText =
         (TextView)view.findViewById(R.id.item_description_txt);
     final TextView priceText = (TextView)view.findViewById(R.id.item_price_txt);
-    final TextView typeText = (TextView)view.findViewById(R.id.item_type);
-    final TextView itemIDText  =(TextView) view.findViewById(R.id.item_id);
+    final TextView typeText = (TextView)view.findViewById(R.id.item_type_txt);
+    final TextView itemIDText = (TextView)view.findViewById(R.id.item_id_txt);
     Log.d(TAG, "Binding UI");
 
     // Cursor Indices
     int idIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_ID);
-    int nameIndex =
-        cursor.getColumnIndex(GrocerySQLHelper.COL_ITEM_NAME);
+    int nameIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_ITEM_NAME);
     int descriptionIndex =
         cursor.getColumnIndex(GrocerySQLHelper.COL_DESCRIPTION);
     int priceIndex = cursor.getColumnIndex(GrocerySQLHelper.COL_PRICE);
