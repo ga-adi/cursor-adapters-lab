@@ -6,10 +6,13 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import ly.generalassemb.drewmahrt.shoppinglistver2.R;
@@ -61,26 +64,8 @@ public class MainActivity extends AppCompatActivity {
           @Override
           public boolean onItemLongClick(AdapterView<?> parent, View view,
                                          int position, long id) {
-            final TextView textView = (TextView)findViewById(R.id.item_id_txt);
-            final String itemId = textView.getText().toString();
+            MainActivity.this.showPopUp(view);
 
-            final GroceryItem cacheItem = mHelper.createFromId(itemId);
-            mHelper.deleteById(itemId);
-            mAdapter.swapCursor(mHelper.getGroceries());
-            Snackbar.make(mLayout, "Item was deleted",
-                          Snackbar.LENGTH_INDEFINITE)
-                .setAction("UNDO",
-                           new View.OnClickListener() {
-                             @Override
-                             public void onClick(View v) {
-                               mHelper.create(cacheItem);
-                               mAdapter.swapCursor(mHelper.getGroceries());
-                               Snackbar.make(mLayout, "Item was restored",
-                                             Snackbar.LENGTH_SHORT)
-                                   .show();
-                             }
-                           })
-                .show();
             return true;
           }
         });
@@ -114,5 +99,51 @@ public class MainActivity extends AppCompatActivity {
     mHelper = GrocerySQLHelper.getInstance(MainActivity.this);
     mHelper.create(item);
     mAdapter.swapCursor(mHelper.getGroceries());
+  }
+
+  public void showPopUp(View view) {
+    PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
+    popupMenu.setOnMenuItemClickListener(
+        new PopupMenu.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+            case R.id.popup_delete:
+              deleteAction();
+              break;
+            case R.id.popup_update:
+              break;
+            default:
+              break;
+            }
+            return false;
+          }
+        });
+
+    MenuInflater inflater = popupMenu.getMenuInflater();
+    inflater.inflate(R.menu.popup, popupMenu.getMenu());
+    popupMenu.show();
+  }
+
+  private void deleteAction() {
+    final TextView textView = (TextView)findViewById(R.id.item_id_txt);
+    final String itemId = textView.getText().toString();
+
+    final GroceryItem cacheItem = mHelper.createFromId(itemId);
+    mHelper.deleteById(itemId);
+    mAdapter.swapCursor(mHelper.getGroceries());
+    Snackbar.make(mLayout, "Item was deleted", Snackbar.LENGTH_INDEFINITE)
+        .setAction("UNDO",
+                   new View.OnClickListener() {
+                     @Override
+                     public void onClick(View v) {
+                       mHelper.create(cacheItem);
+                       mAdapter.swapCursor(mHelper.getGroceries());
+                       Snackbar.make(mLayout, "Item was restored",
+                                     Snackbar.LENGTH_SHORT)
+                           .show();
+                     }
+                   })
+        .show();
   }
 }
